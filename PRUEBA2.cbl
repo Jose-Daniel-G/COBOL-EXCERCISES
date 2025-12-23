@@ -1,7 +1,7 @@
       ******************************************************************
-      * Author:
-      * Date:
-      * Purpose:
+      * Author:  JOSE DANIEL GRIJALBA
+      * Date:    12/23/2025
+      * Purpose: LEARN
       * Tectonics: cobc
       ******************************************************************
        >>SOURCE FORMAT FREE
@@ -26,7 +26,7 @@
            05 LINE 1 COL 65 FROM FECHA-SISTEMA BACKGROUND-COLOR 4
                                                FOREGROUND-COLOR 7.
 
-           05 LINE 2 COL 1 PIC X(80) FROM ALL " " BACKGROUND-COLOR 7.   *> 2. LA BARRA DE MENÚ HORIZONTAL (Gris con letras rojas)
+           05 LINE 2 COL 1 PIC X(80) FROM ALL " " BACKGROUND-COLOR 7.   *> 2. LA BARRA DE MENï¿½ HORIZONTAL (Gris con letras rojas)
 
        *> --- MENU VERTICAL DESPLEGABLE (COMERCIAL) ---
        01  MENU-COMERCIAL.
@@ -78,7 +78,7 @@
                DISPLAY BARRA-SUPERIOR
                PERFORM DIBUJAR-OPCIONES
 
-               *> Captura de navegación en la barra inferior o mediante letras
+               *> Captura de navegaciï¿½n en la barra inferior o mediante letras
                DISPLAY "MODULO: [ ] (F:Finan, C:Comer, M:Manuf, S:Salir)"
                        LINE 24 COL 1
                ACCEPT OPCION-CAPTURA LINE 24 COL 10
@@ -236,5 +236,5 @@
                      ACCEPT OPCION-VENTANA
              END-EVALUATE
          END-PERFORM.
-         *> Limpiamos solo el área del menú verde al salir
+         *> Limpiamos solo el ï¿½rea del menï¿½ verde al salir
          DISPLAY " " LINE 4 COL 45 ERASE EOS BACKGROUND-COLOR 1.
