@@ -18,6 +18,7 @@
        WORKING-STORAGE SECTION.
        *> Estados de Archivo y Control
        01  ST-FILE        PIC XX.
+       01  MENSAJE        PIC X(70).
        01  WS-PAUSA       PIC X.
        01  RESPUESTA      PIC X     VALUE "S".
        01  FIN            PIC X     VALUE "N".
@@ -107,6 +108,11 @@
                CLOSE CLIENTES 
                OPEN I-O CLIENTES.
 
+           IF ST-FILE > "07"                                 
+             STRING "Error al abrir Clientes " ST-FILE DELIMITED BY SIZE
+                     INTO MENSAJE
+              DISPLAY MENSAJE LINE 10 COL 20
+              MOVE "S" TO FIN.
        INGRESO-ID.
            MOVE 0 TO W-CLI-ID.
            ACCEPT W-CLI-ID LINE 5 COL 25 WITH PROMPT HIGHLIGHT.
