@@ -10,7 +10,7 @@
        DATA DIVISION.
        FILE SECTION.
             COPY "./bin/clientes.fd".
-
+            COPY "./bin/carro.fpy".
        WORKING-STORAGE SECTION.
        01  ST-FILE    PIC XX.
        01  X          PIC X.

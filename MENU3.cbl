@@ -9,6 +9,7 @@
        INPUT-OUTPUT SECTION. 
        DATA DIVISION. 
        WORKING-STORAGE SECTION.
+       *>Aqui puedes poner tus cpy
        01  WS-KEY            PIC 9(4). 
 
        01  OPCION-CAPTURA    PIC X VALUE SPACE.
