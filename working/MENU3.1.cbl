@@ -140,16 +140,7 @@
                               DISPLAY BARRA-SUPERIOR
                               DISPLAY FINANCIERO
        
-                           WHEN 2 
-                              DISPLAY "CARGANDO CLIENTES..." LINE 15 COL 10
-                              CALL "CLIENTES" 
-                              ON EXCEPTION
-                                 DISPLAY "ERROR: NO SE ENCONTRO CLIENTES-PROGRAM" LINE 15 COL 10
-                              END-CALL
-                              *> Al regresar, limpiamos y redibujamos el menú
-                              DISPLAY " " LINE 1 COL 1 BLANK SCREEN BACKGROUND-COLOR 1
-                              DISPLAY BARRA-SUPERIOR
-                              DISPLAY FINANCIERO
+                           WHEN 2 DISPLAY "ABRIENDO COBROS..."   LINE 15 COL 10
                            WHEN 3 DISPLAY "ABRIENDO NOTAS CREDITO..." LINE 15 COL 10
                            WHEN 4 
                                PERFORM LIMPIAR-AREA-MENU
