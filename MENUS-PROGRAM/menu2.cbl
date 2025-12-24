@@ -4,11 +4,19 @@
        PROGRAM-ID. SIESA-MENU-NAV.
        ENVIRONMENT DIVISION.
        CONFIGURATION SECTION.
-        SPECIAL-NAMES.
-            CRT STATUS IS WS-KEY.
+       SPECIAL-NAMES.
+           CRT STATUS IS WS-KEY.
+           DECIMAL-POINT IS COMMA.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+            COPY "./bin/clientes.sel".
        DATA DIVISION.
+       FILE SECTION.
+            COPY "./bin/clientes.fd".
        WORKING-STORAGE SECTION.
-       01  WS-KEY             PIC 9(4).
+       01  WS-KEY            PIC 9(4).
+       01  ST-FILE           PIC XX.
+       01  MENSAJE    PIC X(70).
        01  OPCION-CAPTURA    PIC X VALUE SPACE.
        01  MODULO-ACTUAL     PIC 9 VALUE 2. *> 1:Finan, 2:Comer, 3:Manuf
        01  FECHA-SISTEMA     PIC X(17) VALUE "DECEMBER 24, 2025".
@@ -16,6 +24,14 @@
        *> VARIABLES PARA LA NAVEGACION
        01  WS-FILA-ACTUAL     PIC 9 VALUE 1. *> 1:Facturas, 2:Cobros, 3:Notas, 4:Salir
        01  WS-FIN-SUBMENU     PIC X VALUE "N".
+       *> ---- PROGRAMA CLIENTES  ----
+       01  DATOS.
+           02 W-CLI-NOMBRE        PIC X(10).
+           02 W-CLI-NOMBRE-ANT    PIC X(10).
+           02 W-CLI-DIRECCION PIC X(80).
+           02 W-CLI-CODPOST   PIC X(10).
+           02 W-CLI-CATEGORIA PIC X.
+
        SCREEN SECTION.
        *> --- BARRA SUPERIOR DINAMICA ---
        01  BARRA-SUPERIOR.
@@ -50,6 +66,9 @@
                ACCEPT OPCION-CAPTURA LINE 24 COL 10
 
                EVALUATE FUNCTION UPPER-CASE(OPCION-CAPTURA)
+                   WHEN "E"
+                       PERFORM LIMPIAR-AREA-MENU
+                       MOVE 1 TO MODULO-ACTUAL
                    WHEN "F"
                        PERFORM LIMPIAR-AREA-MENU
                        MOVE 2 TO MODULO-ACTUAL
@@ -59,6 +78,14 @@
            STOP RUN.
 
        DIBUJAR-OPCIONES.
+           IF MODULO-ACTUAL = 1         *> --- Estructura basica ---
+              DISPLAY "[E]" LINE 2 COL 5
+                      BACKGROUND-COLOR 0 FOREGROUND-COLOR 7
+           ELSE
+              DISPLAY "[" LINE 2 COL 5 BACKGROUND-COLOR 7 FOREGROUND-COLOR 1
+              DISPLAY "E" LINE 2 COL 6 BACKGROUND-COLOR 7 FOREGROUND-COLOR 4
+              DISPLAY "]" LINE 2 COL 7 BACKGROUND-COLOR 7 FOREGROUND-COLOR 1
+           END-IF.
            IF MODULO-ACTUAL = 2        *> --- OPCION FINANCIERO ---
               DISPLAY " Financiero " LINE 2 COL 10
                       BACKGROUND-COLOR 0 FOREGROUND-COLOR 7
@@ -115,12 +142,17 @@
                    WHEN 0    *> ENTER
                        EVALUATE WS-FILA-ACTUAL
                            WHEN 1 DISPLAY "ABRIENDO FACTURAS..." LINE 15 COL 10
-                           WHEN 4 MOVE "S" TO WS-FIN-SUBMENU
+                           WHEN 2 DISPLAY "ABRIENDO COBROS..."   LINE 15 COL 10
+                           WHEN 3 DISPLAY "ABRIENDO NOTAS CREDITO..." LINE 15 COL 10
+                           WHEN 4 
+                               PERFORM LIMPIAR-AREA-MENU
+                               MOVE "S" TO WS-FIN-SUBMENU
                        END-EVALUATE
                END-EVALUATE
                
                *> SALIDA POR TECLADO SI ESCRIBEN "S"
                IF FUNCTION UPPER-CASE(OPCION-VENTANA) = "S"
+                  PERFORM LIMPIAR-AREA-MENU
                   MOVE "S" TO WS-FIN-SUBMENU
                END-IF
            END-PERFORM.
