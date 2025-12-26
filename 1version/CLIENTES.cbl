@@ -77,6 +77,8 @@
        PROCEDURE DIVISION.
        MAIN-LOGIC.
            SET ENVIRONMENT "COB_SCREEN_EXCEPTIONS" TO "Y".
+           SET ENVIRONMENT "COB_SCREEN_ESC"        TO "Y". 
+
            PERFORM ABRO-ARCHIVO.
            
            PERFORM UNTIL FIN = "S"

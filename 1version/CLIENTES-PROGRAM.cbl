@@ -4,6 +4,8 @@
        CONFIGURATION SECTION.
        SPECIAL-NAMES.
            DECIMAL-POINT IS COMMA.
+           CRT STATUS IS WS-KEY.
+           
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
            SELECT OPTIONAL CLIENTES ASSIGN TO "./clientes.dat"
@@ -30,6 +32,7 @@
            03 FILLER               PIC X(240).
 
        WORKING-STORAGE SECTION.
+       01  WS-KEY         PIC 9(4).
        01  ST-FILE    PIC XX.
        01  X          PIC X.
 
@@ -54,6 +57,9 @@
            02 FECHA9 REDEFINES FECHA-TEXT PIC 9(06).
        PROCEDURE DIVISION.
        MAIN-PROCEDURE.
+           SET ENVIRONMENT "COB_SCREEN_EXCEPTIONS" TO "Y".
+           SET ENVIRONMENT "COB_SCREEN_ESC"        TO "Y". 
+           
            PERFORM INICIALIZACION.
            PERFORM ABRO-ARCHIVO.
            PERFORM PROCESO THRU F-PROCESO UNTIL FIN = "S".

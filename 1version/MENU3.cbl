@@ -36,13 +36,20 @@
            05 LINE 03 COL 10 VALUE "+--------------------------+" BACKGROUND-COLOR 7 FOREGROUND-COLOR 0.
            05 LINE 04 COL 10 VALUE "| Financiero               |" BACKGROUND-COLOR 7 FOREGROUND-COLOR 0.
            05 LINE 05 COL 10 VALUE "+--------------------------+" BACKGROUND-COLOR 7 FOREGROUND-COLOR 0.
-           05 LINE 06 COL 10 VALUE "| F. Clientes Program      |" BACKGROUND-COLOR 7 FOREGROUND-COLOR 1.
+           05 LINE 06 COL 10 VALUE "| P. Program               |" BACKGROUND-COLOR 7 FOREGROUND-COLOR 1.
            05 LINE 07 COL 10 VALUE "| C. Clientes              |" BACKGROUND-COLOR 7 FOREGROUND-COLOR 1.
-           05 LINE 08 COL 10 VALUE "| N. Notas Credito         |" BACKGROUND-COLOR 7 FOREGROUND-COLOR 1.
+           05 LINE 08 COL 10 VALUE "| L. LISTADO               |" BACKGROUND-COLOR 7 FOREGROUND-COLOR 1.
            05 LINE 09 COL 10 VALUE "| S. Salir al Menu Sup.    |" BACKGROUND-COLOR 7 FOREGROUND-COLOR 1.
            05 LINE 10 COL 10 VALUE "+--------------------------+" BACKGROUND-COLOR 7 FOREGROUND-COLOR 0.
-           05 LINE 12 COL 10 VALUE "ACCION: [ ]" BACKGROUND-COLOR 1 FOREGROUND-COLOR 7.
-           05 SC-OPC-V LINE 12 COL 29 PIC X TO OPCION-VENTANA.
+
+       01  MENU-CONFRONTACION.
+            05  GRUPO-VERDE BACKGROUND-COLOR 6 FOREGROUND-COLOR 7.*> Grupo con color Turquesa/Verde (Fondo 6 o 3 dependiendo del terminal)
+            10 LINE 07 COL 33 VALUE "+-----------------------------+".
+            10 LINE 08 COL 33 VALUE "| A.B.M CLIENTES              |".
+            10 LINE 09 COL 33 VALUE "+-----------------------------+".
+            10 LINE 10 COL 33 VALUE "| Listar                      |". 
+            10 LINE 11 COL 33 VALUE "| Regresar                    |". 
+            10 LINE 12 COL 33 VALUE "+-----------------------------+".  
 
        PROCEDURE DIVISION.
        MAIN-LOGIC.
@@ -97,9 +104,9 @@
                DISPLAY FINANCIERO
              *> DIBUJAR LAS OPCIONES CON RESALTADO DINAMICO
                IF WS-FILA-ACTUAL = 1
-                  DISPLAY "| F. Clientes Program      |" LINE 06 COL 10 WITH REVERSE-VIDEO
+                  DISPLAY "| P. Program               |" LINE 06 COL 10 WITH REVERSE-VIDEO
                ELSE
-                  DISPLAY "| F. Clientes Program      |" LINE 06 COL 10 BACKGROUND-COLOR 7 FOREGROUND-COLOR 1
+                  DISPLAY "| P. Program               |" LINE 06 COL 10 BACKGROUND-COLOR 7 FOREGROUND-COLOR 1
                END-IF
        
                IF WS-FILA-ACTUAL = 2
@@ -109,9 +116,9 @@
                END-IF
        
                IF WS-FILA-ACTUAL = 3
-                  DISPLAY "| N. Notas Credito         |" LINE 08 COL 10 WITH REVERSE-VIDEO
+                  DISPLAY "| L. LISTADO               |" LINE 08 COL 10 WITH REVERSE-VIDEO
                ELSE
-                  DISPLAY "| N. Notas Credito         |" LINE 08 COL 10 BACKGROUND-COLOR 7 FOREGROUND-COLOR 1
+                  DISPLAY "| L. LISTADO               |" LINE 08 COL 10 BACKGROUND-COLOR 7 FOREGROUND-COLOR 1
                END-IF
        
                IF WS-FILA-ACTUAL = 4
@@ -136,7 +143,7 @@
                               ON EXCEPTION
                                  DISPLAY "ERROR: NO SE ENCONTRO CLIENTES-PROGRAM" LINE 15 COL 10
                               END-CALL
-                              *> Al regresar, limpiamos y redibujamos el menú
+                              CANCEL "CLIENTES-PROGRAM"
                               DISPLAY " " LINE 1 COL 1 BLANK SCREEN BACKGROUND-COLOR 1
                               DISPLAY BARRA-SUPERIOR
                               DISPLAY FINANCIERO
@@ -147,11 +154,21 @@
                               ON EXCEPTION
                                  DISPLAY "ERROR: NO SE ENCONTRO CLIENTES-PROGRAM" LINE 15 COL 10
                               END-CALL
+                              CANCEL "CLIENTES"
+                              DISPLAY " " LINE 1 COL 1 BLANK SCREEN BACKGROUND-COLOR 1
+                              DISPLAY BARRA-SUPERIOR
+                              DISPLAY FINANCIERO
+                           WHEN 3 
+                              DISPLAY "CARGANDO LISTADO DE CLIENTES..." LINE 15 COL 10
+                              CALL "LISTADO" 
+                              ON EXCEPTION
+                                 DISPLAY "ERROR: NO SE ENCONTRO LIST" LINE 15 COL 10
+                              END-CALL
+                              CANCEL "LISTADO"
                               *> Al regresar, limpiamos y redibujamos el menú
                               DISPLAY " " LINE 1 COL 1 BLANK SCREEN BACKGROUND-COLOR 1
                               DISPLAY BARRA-SUPERIOR
                               DISPLAY FINANCIERO
-                           WHEN 3 DISPLAY "ABRIENDO NOTAS CREDITO..." LINE 15 COL 10
                            WHEN 4 
                                PERFORM LIMPIAR-AREA-MENU
                                MOVE "S" TO WS-FIN-SUBMENU
