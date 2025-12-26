@@ -1,0 +1,5 @@
+      78 COLOR-NEGRO VALUE 0.
+      78 COLOR-AZUL  VALUE 1.
+      78 COLOR-ROJO  VALUE 4.
+      78 COLOR-GRIS  VALUE 7.
+      

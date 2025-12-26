@@ -13,6 +13,8 @@
        MAIN.
            *> Activamos el soporte de teclas especiales
            SET ENVIRONMENT "COB_SCREEN_EXCEPTIONS" TO "Y".
+           SET ENVIRONMENT "COB_SCREEN_ESC"        TO "Y". 
+
            DISPLAY SPACES ERASE SCREEN.
            DISPLAY "PRESIONA UNA FLECHA PARA VER SU CODIGO" LINE 5 COL 5.
            DISPLAY "PRESIONA 'X' PARA SALIR" LINE 6 COL 5.

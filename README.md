@@ -10,7 +10,7 @@ cobc -x -free MENU.cbl -o sistema.exe
 ```
 cobc -x -free menu.cbl
 cobc -x -free MENU.cbl CLIENTES.cbl PROGRAM.cbl LISTADO.cbl -o sistema.exec
-cobc -x -free MENU3.cbl CLIENTES-PROGRAM.cbl CLIENTES.cbl LISTADO.cbl -o sistema.exec
+cobc -x -free MENU4.cbl CLIENTES-PROGRAM.cbl CLIENTES.cbl LISTADO.cbl -o sistema.exec
 ```
 
 ARCHIVOS COBOL
@@ -59,6 +59,10 @@ Blanco	 7
 78 TECLA-ABAJO      VALUE 2004.
 78 TECLA-ESC        VALUE 2005.
 78 TECLA-DERECHA    VALUE 2002.
+
+(POSIBLE-PROBAR)
+F1	1001 
+F2	1002
 
 *HABILITAR TECLAS*
 ```
