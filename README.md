@@ -1,4 +1,5 @@
 ![menu](images/menu.png)
+![menu](images/read.png)
 ![program](images/program.png)
 ```
 *> 1. Compila los subprogramas como módulos dinámicos

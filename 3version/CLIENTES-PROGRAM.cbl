@@ -4,9 +4,11 @@
        CONFIGURATION SECTION.
        SPECIAL-NAMES.
            DECIMAL-POINT IS COMMA.
+           CRT STATUS IS WS-KEY.
+           
        INPUT-OUTPUT SECTION.
-      FILE-CONTROL.
-           SELECT OPTIONAL CLIENTES ASSIGN TO "./bin/clientes.dat"
+       FILE-CONTROL.
+           SELECT OPTIONAL CLIENTES ASSIGN TO "./clientes.dat"
                   ORGANIZATION INDEXED
                   ACCESS MODE IS DYNAMIC
                   RECORD KEY IS ID_CLIENTE
@@ -30,11 +32,12 @@
            03 FILLER               PIC X(240).
 
        WORKING-STORAGE SECTION.
+       01  WS-KEY         PIC 9(4).
        01  ST-FILE    PIC XX.
        01  X          PIC X.
 
        01  MENSAJE    PIC X(70).
-       01  FIN-CLIENTE        PIC X     VALUE "N".
+       01  FIN        PIC X     VALUE "N".
        01  EXISTE     PIC X.
        01  HUBO-ERROR PIC 9     VALUE 0.
        01  GUIONES    PIC X(80) VALUE ALL "-".
@@ -52,17 +55,19 @@
        01  FECHA-X.
            02 FECHA-TEXT          PIC X(08).
            02 FECHA9 REDEFINES FECHA-TEXT PIC 9(06).
-           
        PROCEDURE DIVISION.
        MAIN-PROCEDURE.
+           SET ENVIRONMENT "COB_SCREEN_EXCEPTIONS" TO "Y".
+           SET ENVIRONMENT "COB_SCREEN_ESC"        TO "Y". 
+           
            PERFORM INICIALIZACION.
            PERFORM ABRO-ARCHIVO.
-           PERFORM PROCESO THRU F-PROCESO UNTIL FIN-CLIENTE = "S".
+           PERFORM PROCESO THRU F-PROCESO UNTIL FIN = "S".
            PERFORM CIERRO-ARCHIVO.
            GO TO FINALIZAR.
 
        INICIALIZACION.
-           MOVE "N" TO FIN-CLIENTE.
+           MOVE "N" TO FIN.
            MOVE "S" TO EXISTE.
 
        ABRO-ARCHIVO.
@@ -71,21 +76,21 @@
              STRING "Error al abrir Clientes " ST-FILE DELIMITED BY SIZE
                      INTO MENSAJE
               DISPLAY MENSAJE LINE 10 COL 20
-              MOVE "S" TO FIN-CLIENTE.
+              MOVE "S" TO FIN.
 
        CIERRO-ARCHIVO.
            CLOSE CLIENTES.
 
        FINALIZAR.
-           EXIT PROGRAM.
+           EXIT.
 
        PROCESO.
            PERFORM MUESTRO-PANTALLA.
            PERFORM INGRESO-ID THRU F-INGRESO-ID.
-           IF FIN-CLIENTE = "N"
+           IF FIN = "N"
                PERFORM LEO-CLIENTES THRU F-LEO-CLIENTES
                IF HUBO-ERROR = 1
-                   MOVE "S" TO FIN-CLIENTE
+                   MOVE "S" TO FIN
                    GO TO F-PROCESO
                END-IF
 
@@ -182,7 +187,7 @@
                    "[77] - SALIR "         LINE 23 COL 23.
 
            ACCEPT OPCION LINE 20 COL 38 PROMPT.
-           IF FIN-CLIENTE = "N"
+           IF FIN = "N"
                EVALUATE OPCION
                    WHEN 1
                        PERFORM INGRESO-NOMBRE
@@ -197,7 +202,7 @@
                    WHEN 88
                        PERFORM BORRAR
                    WHEN 77
-                       MOVE "S" TO FIN-CLIENTE
+                       MOVE "S" TO FIN
                    WHEN OTHER
                        GO TO OPCIONES
                END-EVALUATE.
@@ -241,4 +246,3 @@
            DISPLAY MENSAJE LINE 24 COL 40.
 
        END PROGRAM "CLIENTES-PROGRAM".
-
