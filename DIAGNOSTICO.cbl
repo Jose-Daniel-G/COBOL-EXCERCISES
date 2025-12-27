@@ -63,6 +63,8 @@
                           DISPLAY "- FLECHA IZQUIERDA" LINE 10 COL 18
                       WHEN KEY-RIGHT
                           DISPLAY "- FLECHA DERECHA" LINE 10 COL 18
+                      WHEN 1008
+                          DISPLAY "- FLECHA DELETE" LINE 10 COL 18
                       WHEN OTHER
                           DISPLAY "- OTRA TECLA"    LINE 10 COL 18
                   END-EVALUATE

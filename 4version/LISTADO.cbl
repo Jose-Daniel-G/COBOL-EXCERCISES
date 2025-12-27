@@ -1,4 +1,4 @@
->>SOURCE FORMAT FREE
+       >>SOURCE FORMAT FREE
        IDENTIFICATION DIVISION.
        PROGRAM-ID. LISTADO.
 
@@ -19,14 +19,22 @@
            COPY "./CPY/TECLAS.cpy".
        01  ST-FILE        PIC XX.
        01  WS-KEY         PIC 9(4).
-       01  WS-FIN-LISTA   PIC X VALUE "N".
-       
+       01  MENSAJE    PIC X(70).
        01  WS-FILA        PIC 99.
        01  WS-FILA-INICIO PIC 99 VALUE 5.
        01  WS-FILA-MAX    PIC 99.
        01  WS-PUNTERO     PIC 99 VALUE 5.
        01  WS-INDICE      PIC 99 VALUE 1.
        01  WS-PAUSA       PIC X.
+       01  RESPUESTA      PIC X     VALUE "S".
+
+       01 WS-ESTADO-ARCHIVO PIC X.
+          88 ARCHIVO-OK             VALUE "O".
+          88 ARCHIVO-ERROR          VALUE "E".
+
+       01  WS-FIN-LISTA       PIC X VALUE "N".
+           88 FIN-LISTA          VALUE "S".
+           88 NO-FIN-LISTA       VALUE "N".
 
        01  TABLA-PANTALLA.
            05 REG-PANTALLA OCCURS 20 TIMES.
@@ -36,7 +44,7 @@
               10 T-CAT     PIC X(01).
 
        SCREEN SECTION.
-       01 PANTALLA-LISTADO.
+       01 PANTALLA-BASE.
            05 BLANK SCREEN BACKGROUND-COLOR 1 FOREGROUND-COLOR 7.
            05 LINE 1 COL 1 PIC X(80) FROM ALL " " BACKGROUND-COLOR 7.
            05 LINE 1 COL 2 VALUE "TEST 8.5" BACKGROUND-COLOR 7 FOREGROUND-COLOR 1.
@@ -49,7 +57,7 @@
            05 LINE 3 COL 69 VALUE "CATEGORIA"          BACKGROUND-COLOR 1.
            05 LINE 4 COL 1  PIC X(80) FROM ALL "_" BACKGROUND-COLOR 1.
            05 LINE 25 COL 1 PIC X(80) FROM ALL " " BACKGROUND-COLOR 7.
-           05 LINE 25 COL 2 VALUE "[FLECHAS] Navegar  [ENTER] Seleccionar  [ESC] Retorna" 
+           05 LINE 25 COL 2 VALUE "[F8] ELIMINAR  [ENTER] EDITAR  [ESC] RetornaR" 
               BACKGROUND-COLOR 7 FOREGROUND-COLOR 1.
 
        PROCEDURE DIVISION.
@@ -59,8 +67,9 @@
            
            PERFORM ABRO-ARCHIVO.
 
-           DISPLAY PANTALLA-LISTADO.
-           MOVE "N" TO WS-FIN-LISTA.
+           DISPLAY PANTALLA-BASE.
+           MOVE "S" TO RESPUESTA
+           SET NO-FIN-LISTA TO TRUE.
            MOVE 9999 TO WS-KEY. 
            
            PERFORM MOSTRAR-REGISTROS.
@@ -95,21 +104,23 @@
                           SUBTRACT 1 FROM WS-PUNTERO
                           SUBTRACT 1 FROM WS-INDICE
                        END-IF
+                   WHEN KEY-F8  *> Código habitual para la tecla Suprimir/Delete
+                       PERFORM ELIMINAR-REGISTRO
                END-EVALUATE
            END-PERFORM.
 
        MOSTRAR-REGISTROS.
            MOVE ZERO TO CLI_ID.
            START CLIENTES KEY IS NOT LESS THAN CLI_ID
-               INVALID KEY MOVE "S" TO WS-FIN-LISTA
+               INVALID KEY SET FIN-LISTA TO TRUE
            END-START.
 
            MOVE WS-FILA-INICIO TO WS-FILA. 
            MOVE 1 TO WS-INDICE.
            
-           PERFORM UNTIL WS-FIN-LISTA = "S" OR WS-FILA > 22
+           PERFORM UNTIL FIN-LISTA OR WS-FILA > 22
                READ CLIENTES NEXT RECORD
-                   AT END MOVE "S" TO WS-FIN-LISTA
+                   AT END SET FIN-LISTA TO TRUE
                    NOT AT END
                        MOVE CLI_ID        TO T-ID(WS-INDICE)
                        MOVE CLI_NOMBRE    TO T-NOM(WS-INDICE)
@@ -142,15 +153,40 @@
            DISPLAY T-CAT(WS-INDICE) LINE WS-PUNTERO COL 78 BACKGROUND-COLOR 7 FOREGROUND-COLOR 0.
 
        NORMALIZAR-FILA.
-           *> 1. Limpiar franja volviendo a Azul
-           DISPLAY ALL " " LINE WS-PUNTERO COL 1 SIZE 80 BACKGROUND-COLOR 1.
-           *> 2. Datos en Blanco sobre Azul
-           DISPLAY T-ID(WS-INDICE)  LINE WS-PUNTERO COL 2  BACKGROUND-COLOR 1 FOREGROUND-COLOR 7.
+          
+           DISPLAY ALL " " LINE WS-PUNTERO COL 1 SIZE 80 BACKGROUND-COLOR 1. *> 1. Limpiar franja volviendo a Azul
+           DISPLAY T-ID(WS-INDICE)  LINE WS-PUNTERO COL 2  BACKGROUND-COLOR 1 FOREGROUND-COLOR 7.*> 2. Datos en Blanco sobre Azul
            DISPLAY T-NOM(WS-INDICE) LINE WS-PUNTERO COL 15 BACKGROUND-COLOR 1 FOREGROUND-COLOR 7.
            DISPLAY T-DIR(WS-INDICE) LINE WS-PUNTERO COL 47 BACKGROUND-COLOR 1 FOREGROUND-COLOR 7.
            DISPLAY T-CAT(WS-INDICE) LINE WS-PUNTERO COL 78 BACKGROUND-COLOR 1 FOREGROUND-COLOR 7.
 
+       ELIMINAR-REGISTRO. 
+               DISPLAY "Desea ELIMINAR el cliente [S/N]? " LINE 22 
+                       COL 20 WITH BACKGROUND-COLOR 4
+               ACCEPT RESPUESTA LINE 22 COL 53
+               
+               IF FUNCTION UPPER-CASE(RESPUESTA) = "S"
+                      
+                   MOVE T-ID(WS-INDICE) TO CLI_ID                       *> 1. Posicionar el archivo en el registro seleccionado
+                   READ CLIENTES
+                       KEY IS CLI_ID
+                       INVALID KEY
+                           DISPLAY "REGISTRO NO ENCONTRADO" 
+                           LINE 23 COL 20 ACCEPT WS-PAUSA LINE 23 COL 55
+                       NOT INVALID KEY
+                           DELETE CLIENTES RECORD
+                              INVALID KEY
+                                DISPLAY "ERROR AL ELIMINAR" LINE 
+                                23 COL 20 ACCEPT WS-PAUSA LINE 23 COL 55
+                              NOT INVALID KEY
+                                DISPLAY "REGISTRO ELIMINADO!" LINE 
+                                23 COL 20 ACCEPT WS-PAUSA LINE 23 COL 55 
+                                   PERFORM RECARGAR-LISTADO
+                           END-DELETE
+                   END-READ
+               END-IF.      
        ABRO-ARCHIVO.
+           MOVE SPACE TO WS-ESTADO-ARCHIVO       
            OPEN I-O CLIENTES.
            *> Si el archivo no existe (Error 35), lo creamos
            IF ST-FILE = "35" 
@@ -162,5 +198,21 @@
              STRING "Error al abrir Clientes " ST-FILE DELIMITED BY SIZE
                      INTO MENSAJE
               DISPLAY MENSAJE LINE 10 COL 20
-              MOVE "S" TO FIN.       
+              SET ARCHIVO-ERROR TO TRUE
+           ELSE
+              SET ARCHIVO-OK TO TRUE
+           END-IF.      
            
+       LIMPIAR-LISTADO.
+           PERFORM VARYING WS-FILA FROM WS-FILA-INICIO BY 1
+               UNTIL WS-FILA > 22
+               DISPLAY ALL " " LINE WS-FILA COL 1 SIZE 80 BACKGROUND-COLOR 1
+           END-PERFORM.
+       RECARGAR-LISTADO.
+           PERFORM LIMPIAR-LISTADO
+       
+           MOVE "N" TO WS-FIN-LISTA
+           MOVE WS-FILA-INICIO TO WS-PUNTERO
+           MOVE 1 TO WS-INDICE
+       
+           PERFORM MOSTRAR-REGISTROS.
